@@ -1,40 +1,28 @@
 import {ApolloServer, gql} from "apollo-server-cloud-functions";
-
-const examples = [
-  {id: 1, name: "exam1", message: "message1"},
-  {id: 2, name: "exam2", message: "message2"},
-  {id: 3, name: "exam3", message: "message3"},
-];
-
-const samples = [
-  {id: 1, title: "sample1", status: "ok"},
-  {id: 2, title: "sample2", status: "ok"},
-  {id: 3, title: "sample3", status: "bad"},
-];
+import * as admin from "firebase-admin";
 
 const typeDefs = gql`
   type Query {
-    examples: [Example]
-    samples: [Sample]
+    users: [User]
   }
 
-  type Example {
-    id: ID!
+  type User {
+    age: String
+    birthday: String
     name: String!
-    message: String!
-  }
-
-  type Sample {
-    id: ID!
-    title: String!
-    status: String!
+    displayName: String!
+    email: String!
+    uid: ID!
+    weight: String!
   }
 `;
 
 const resolvers = {
   Query: {
-    examples: () => examples,
-    samples: () => samples,
+    async users() {
+      const users = await admin.firestore().collection("users").get();
+      return users.docs.map((user) => user.data());
+    },
   },
 };
 
