@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {ApolloServer, gql} from "apollo-server-cloud-functions";
-import {server} from "./test";
+// import {ApolloServer, gql} from "apollo-server-cloud-functions";
+// import {server} from "./test";
 
 admin.initializeApp();
 
@@ -19,11 +19,15 @@ exports.createNewUser = functions.auth.user().onCreate((user) => {
   return admin.firestore().collection("users").doc(uid).set(account);
 });
 
-exports.deleteUser = functions.auth.user().onDelete((user) => {
+exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   const {uid} = user;
-
-  functions.logger.log("user deleted", user.email, uid);
-  return admin.firestore().collection("users").doc(uid).delete();
+  functions.logger.log("user deleted v2", user.email, uid);
+  await admin.firestore().collection("users").doc(uid).delete();
+  return admin
+      .firestore()
+      .collection("incoming_user_changes")
+      .doc(uid)
+      .delete();
 });
 
 exports.updateUser = functions.firestore
@@ -51,15 +55,15 @@ exports.updateUser = functions.firestore
 exports.deleteUserChanges = functions.firestore
     .document("users/{userId}")
     .onUpdate((snap, context) => {
-      // return admin
-      //     .database()
-      //     .ref("/other")
-      //     .orderByChild("id")
-      //     .equalTo(context.params.pushId)
-      //     .once("value")
-      //     .then((snapshot) => {});
+    // return admin
+    //     .database()
+    //     .ref("/other")
+    //     .orderByChild("id")
+    //     .equalTo(context.params.pushId)
+    //     .once("value")
+    //     .then((snapshot) => {});
 
       return admin.firestore().collection("incoming_user_changes").doc();
     });
 
-exports.graphql = functions.https.onRequest(server.createHandler());
+// exports.graphql = functions.https.onRequest(server.createHandler());
