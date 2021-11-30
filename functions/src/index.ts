@@ -1,8 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {ApolloServer} from "apollo-server-cloud-functions";
+import {ApolloServer} from "apollo-server-express";
 import {resolvers} from "./resolver";
 import {typeDefs} from "./typeDefs";
+import express from "express";
 
 admin.initializeApp();
 
@@ -52,16 +53,32 @@ exports.updateUser = functions.firestore
 exports.deleteUserChanges = functions.firestore
     .document("users/{userId}")
     .onUpdate((snap, context) => {
-      // return admin
-      //     .database()
-      //     .ref("/other")
-      //     .orderByChild("id")
-      //     .equalTo(context.params.pushId)
-      //     .once("value")
-      //     .then((snapshot) => {});
+    // return admin
+    //     .database()
+    //     .ref("/other")
+    //     .orderByChild("id")
+    //     .equalTo(context.params.pushId)
+    //     .once("value")
+    //     .then((snapshot) => {});
 
       return admin.firestore().collection("incoming_user_changes").doc();
     });
 
-const server = new ApolloServer({typeDefs, resolvers});
-exports.graphql = functions.https.onRequest(server.createHandler());
+const app = express();
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+});
+
+server
+    .start()
+    .then(() => {
+      server.applyMiddleware({app, path: "/"});
+    })
+    .catch((e) => {
+      console.log("weird");
+    });
+
+exports.graphql = functions.https.onRequest(app);

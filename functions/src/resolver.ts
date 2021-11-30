@@ -1,6 +1,4 @@
-import {ApolloServer, gql} from "apollo-server-cloud-functions";
 import * as admin from "firebase-admin";
-import {typeDefs} from "./typeDefs";
 import {generateUid} from "./lib/generateUid";
 
 export const resolvers = {
@@ -11,7 +9,7 @@ export const resolvers = {
     },
   },
   Mutation: {
-    addTest: async (_: null, {text}: {text: string}) => {
+    addTest: async (_: null, {text}: { text: string }) => {
       const uid = generateUid();
       await admin.firestore().collection("test").doc(uid).set({
         uid: uid,

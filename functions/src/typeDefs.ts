@@ -1,4 +1,4 @@
-import {ApolloServer, gql} from "apollo-server-cloud-functions";
+import {gql} from "apollo-server-cloud-functions";
 import {DocumentNode} from "graphql";
 
 export const typeDefs: DocumentNode = gql`
@@ -7,7 +7,7 @@ export const typeDefs: DocumentNode = gql`
   }
 
   type Mutation {
-    addTest(text: String!): Test 
+    addTest(text: String!): Test
   }
 
   type User {
