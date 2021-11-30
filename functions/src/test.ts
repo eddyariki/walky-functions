@@ -1,6 +1,8 @@
-import {ApolloServer, gql} from "apollo-server-cloud-functions";
+import {ApolloServer, gql} from "apollo-server-express";
+import express from "express";
 import * as admin from "firebase-admin";
 
+export const app = express();
 const typeDefs = gql`
   type Query {
     users: [User]
@@ -26,4 +28,8 @@ const resolvers = {
   },
 };
 
-export const server = new ApolloServer({typeDefs, resolvers});
+export const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+});
