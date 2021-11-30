@@ -1,6 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {app, server} from "./test";
+import {ApolloServer} from "apollo-server-express";
+import {resolvers} from "./resolver";
+import {typeDefs} from "./typeDefs";
+import express from "express";
 
 admin.initializeApp();
 
@@ -60,6 +63,14 @@ exports.deleteUserChanges = functions.firestore
 
       return admin.firestore().collection("incoming_user_changes").doc();
     });
+
+const app = express();
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+});
 
 server
     .start()
