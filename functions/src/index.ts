@@ -1,7 +1,8 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {ApolloServer, gql} from "apollo-server-cloud-functions";
-import {server} from "./test";
+import {ApolloServer} from "apollo-server-cloud-functions";
+import {resolvers} from "./resolver";
+import {typeDefs} from "./typeDefs";
 
 admin.initializeApp();
 
@@ -62,4 +63,5 @@ exports.deleteUserChanges = functions.firestore
       return admin.firestore().collection("incoming_user_changes").doc();
     });
 
+const server = new ApolloServer({typeDefs, resolvers});
 exports.graphql = functions.https.onRequest(server.createHandler());
