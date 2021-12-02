@@ -19,5 +19,30 @@ export const resolvers = {
       const test = await testDoc.data();
       return test;
     },
+
+    updateUser: async (
+        _: null,
+        {
+          uid,
+          displayName,
+          age,
+          birthday,
+          weight,
+        }: {
+        uid: string;
+        displayName?: string;
+        age?: string;
+        birthday?: string;
+        weight?: string;
+      }
+    ): Promise<User> => {
+      await admin.firestore().collection("incoming_user_changes").doc(uid).set({
+        displayName,
+        age,
+        birthday,
+        weight,
+      });
+      return {uid, displayName, age, birthday, weight};
+    },
   },
 };
