@@ -1,7 +1,14 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+<<<<<<< HEAD
 // import {ApolloServer, gql} from "apollo-server-cloud-functions";
 // import {server} from "./test";
+=======
+import {ApolloServer} from "apollo-server-express";
+import {resolvers} from "./resolver";
+import {typeDefs} from "./typeDefs";
+import express from "express";
+>>>>>>> fc585a54b71cb8888b04af2cd306e78f3f5f0853
 
 admin.initializeApp();
 
@@ -83,4 +90,25 @@ exports.deleteUserChanges = functions.firestore
       return admin.firestore().collection("incoming_user_changes").doc();
     });
 
+<<<<<<< HEAD
 // exports.graphql = functions.https.onRequest(server.createHandler());
+=======
+const app = express();
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+});
+
+server
+    .start()
+    .then(() => {
+      server.applyMiddleware({app, path: "/"});
+    })
+    .catch((e) => {
+      console.log("weird");
+    });
+
+exports.graphql = functions.https.onRequest(app);
+>>>>>>> fc585a54b71cb8888b04af2cd306e78f3f5f0853
