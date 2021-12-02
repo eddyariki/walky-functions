@@ -8,6 +8,13 @@ export const typeDefs: DocumentNode = gql`
 
   type Mutation {
     addTest(text: String!): Test
+    updateUser(
+      uid: String!
+      displayName: String
+      age: String
+      birthday: String
+      weight: String
+    ): User
   }
 
   type User {
