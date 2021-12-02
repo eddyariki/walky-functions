@@ -35,7 +35,7 @@ export const resolvers = {
         birthday?: string;
         weight?: string;
       }
-    ): Promise<User | undefined> => {
+    ): Promise<User> => {
       await admin.firestore().collection("incoming_user_changes").doc(uid).set({
         displayName,
         age,
