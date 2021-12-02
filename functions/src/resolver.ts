@@ -30,10 +30,10 @@ export const resolvers = {
           weight,
         }: {
         uid: string;
-        displayName: string;
-        age: string;
-        birthday: string;
-        weight: string;
+        displayName?: string;
+        age?: string;
+        birthday?: string;
+        weight?: string;
       }
     ): Promise<User | undefined> => {
       await admin.firestore().collection("incoming_user_changes").doc(uid).set({
@@ -42,8 +42,7 @@ export const resolvers = {
         birthday,
         weight,
       });
-      const result = await admin.firestore().doc(`users/${uid}`).get();
-      return await result.data();
+      return {uid, displayName, age, birthday, weight};
     },
   },
 };
