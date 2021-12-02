@@ -24,11 +24,6 @@ exports.createNewUser = functions.auth.user().onCreate((user) => {
 exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   const {uid} = user;
   await admin.firestore().collection("users").doc(uid).delete();
-  return admin
-      .firestore()
-      .collection("incoming_user_changes")
-      .doc(uid)
-      .delete();
 });
 
 exports.updateUser = functions.firestore
@@ -39,7 +34,6 @@ exports.updateUser = functions.firestore
       const ref = await admin.firestore().collection("users").doc(docId).get();
       if (!ref.exists) {
         functions.logger.log("user does not exist");
-
         return admin
             .firestore()
             .collection("incoming_user_changes")
@@ -70,20 +64,6 @@ exports.updateUser = functions.firestore
       }
     });
 
-exports.deleteUserChanges = functions.firestore
-    .document("users/{userId}")
-    .onUpdate((snap, context) => {
-    // return admin
-    //     .database()
-    //     .ref("/other")
-    //     .orderByChild("id")
-    //     .equalTo(context.params.pushId)
-    //     .once("value")
-    //     .then((snapshot) => {});
-
-      return admin.firestore().collection("incoming_user_changes").doc();
-    });
-
 const app = express();
 
 const server = new ApolloServer({
@@ -98,7 +78,7 @@ server
       server.applyMiddleware({app, path: "/"});
     })
     .catch((e) => {
-      console.log("weird");
+      functions.logger.error("error", e);
     });
 
 exports.graphql = functions.https.onRequest(app);
