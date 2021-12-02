@@ -23,7 +23,6 @@ exports.createNewUser = functions.auth.user().onCreate((user) => {
 
 exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   const {uid} = user;
-  functions.logger.log("user deleted v2", user.email, uid);
   await admin.firestore().collection("users").doc(uid).delete();
   return admin
       .firestore()
