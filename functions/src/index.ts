@@ -1,9 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-import {ApolloServer} from "apollo-server-express";
-import {resolvers} from "./resolver";
-import {typeDefs} from "./typeDefs";
-import express from "express";
+// import {ApolloServer} from "apollo-server-express";
+// import {resolvers} from "./resolver";
+// import {typeDefs} from "./typeDefs";
+// import express from "express";
 
 admin.initializeApp();
 
@@ -64,21 +64,21 @@ exports.updateUser = functions.firestore
       }
     });
 
-const app = express();
+// const app = express();
 
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  introspection: true,
-});
+// const server = new ApolloServer({
+//   typeDefs,
+//   resolvers,
+//   introspection: true,
+// });
 
-server
-    .start()
-    .then(() => {
-      server.applyMiddleware({app, path: "/"});
-    })
-    .catch((e) => {
-      functions.logger.error("error", e);
-    });
+// server
+//     .start()
+//     .then(() => {
+//       server.applyMiddleware({app, path: "/"});
+//     })
+//     .catch((e) => {
+//       functions.logger.error("error", e);
+//     });
 
-exports.graphql = functions.https.onRequest(app);
+// exports.graphql = functions.https.onRequest(app);
