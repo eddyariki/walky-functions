@@ -22,7 +22,6 @@ export const typeDefs: DocumentNode = gql`
     birthday: String
     name: String!
     displayName: String!
-    email: String!
     uid: ID!
     weight: String!
   }

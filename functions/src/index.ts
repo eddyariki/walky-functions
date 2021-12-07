@@ -1,23 +1,23 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
-// import {ApolloServer} from "apollo-server-express";
-// import {resolvers} from "./resolver";
-// import {typeDefs} from "./typeDefs";
-// import express from "express";
+import {ApolloServer} from "apollo-server-express";
+import {resolvers} from "./resolver";
+import {typeDefs} from "./typeDefs";
+import express from "express";
 
 admin.initializeApp();
 
 exports.createNewUser = functions.auth.user().onCreate((user) => {
-  const {uid, email, displayName} = user;
+  const {uid, displayName, phoneNumber} = user;
   const account = {
     uid,
-    email,
     displayName,
+    phoneNumber,
     birthday: null,
     age: null,
     weight: null,
   };
-  functions.logger.log("user created", account.email, account.uid);
+  functions.logger.log("user created", account.phoneNumber, account.uid);
   return admin.firestore().collection("users").doc(uid).set(account);
 });
 
@@ -64,21 +64,21 @@ exports.updateUser = functions.firestore
       }
     });
 
-// const app = express();
+const app = express();
 
-// const server = new ApolloServer({
-//   typeDefs,
-//   resolvers,
-//   introspection: true,
-// });
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true,
+});
 
-// server
-//     .start()
-//     .then(() => {
-//       server.applyMiddleware({app, path: "/"});
-//     })
-//     .catch((e) => {
-//       functions.logger.error("error", e);
-//     });
+server
+    .start()
+    .then(() => {
+      server.applyMiddleware({app, path: "/"});
+    })
+    .catch((e) => {
+      functions.logger.error("error", e);
+    });
 
-// exports.graphql = functions.https.onRequest(app);
+exports.graphql = functions.https.onRequest(app);
