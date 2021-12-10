@@ -82,7 +82,7 @@ exports.addFriend = functions.firestore
             .doc(docId)
             .delete();
       }
-      // append caller's uid into friend's requests
+
       await admin.firestore()
           .collection("users")
           .doc(data.friendUid)
@@ -98,8 +98,6 @@ exports.addFriend = functions.firestore
           .delete();
     });
 
-// update caller ("person who accepts friend request")
-// update requester
 exports.approveFriend = functions.firestore
     .document("incoming_approve_friend/{docId}")
     .onCreate(async (snap, context) =>{
@@ -117,7 +115,7 @@ exports.approveFriend = functions.firestore
             .doc(docId)
             .delete();
       }
-      // remove friend's id from requests
+
       await admin.firestore()
           .collection("users")
           .doc(data.uid)
@@ -134,8 +132,8 @@ exports.approveFriend = functions.firestore
                 .FieldValue
                 .arrayUnion(data.friendUid),
           });
-      // append caller's uid into friend's requests
-      return admin.firestore()
+
+      await admin.firestore()
           .collection("users")
           .doc(data.friendUid)
           .update({
@@ -143,6 +141,11 @@ exports.approveFriend = functions.firestore
                 .FieldValue
                 .arrayUnion(data.uid),
           });
+      return admin
+          .firestore()
+          .collection("incoming_approve_friend")
+          .doc(docId)
+          .delete();
     });
 
 exports.rejectFriend = functions.firestore
@@ -150,8 +153,8 @@ exports.rejectFriend = functions.firestore
     .onCreate(async (snap, context) =>{
       const data = snap.data();
       const docId = context.params.docId;
-      // remove friend's id from requests
-      return admin.firestore()
+
+      await admin.firestore()
           .collection("users")
           .doc(data.uid)
           .update({
@@ -159,6 +162,11 @@ exports.rejectFriend = functions.firestore
                 .FieldValue
                 .arrayRemove(data.friendUid),
           });
+      return admin
+          .firestore()
+          .collection("incoming_reject_friend")
+          .doc(docId)
+          .delete();
     });
 
 const app = express();
