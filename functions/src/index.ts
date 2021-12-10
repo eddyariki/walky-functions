@@ -4,6 +4,7 @@ import {ApolloServer} from "apollo-server-express";
 import {typeDefs} from "./typeDefs";
 import express from "express";
 import {resolvers} from "./resolver";
+import {firestore} from "firebase-admin";
 
 admin.initializeApp();
 
@@ -64,61 +65,101 @@ exports.updateUser = functions.firestore
       }
     });
 
-// // request to start a race
-// exports.createRaceRequest = functions.firestore
-//     .document("race_request/{docId}")
-//     .onCreate(async (snap, context) => {
-//       const original = snap.data();
-//       const docId = context.params.docId;
-//       const sender = original.senderUid;
-//       const requestedUser = original.requestedUserUid;
-//       const ref = await admin
-//           .firestore()
-//           .collection("users")
-//           .doc(requestedUser)
-//           .get();
-//       if (!ref.exists) {
-//         functions.logger.log("user does not exist");
-//         return admin
-//             .firestore()
-//             .collection("race_request")
-//             .doc(docId)
-//             .delete();
-//       } else {
-//         const {location} = original;
-//         functions.logger.log(
-//             "race request created",
-//             docId,
-//             sender,
-//             requestedUser,
-//             location
-//         );
+exports.addFriend = functions.firestore
+    .document("incoming_friend_request/{docId}")
+    .onCreate(async (snap, context)=> {
+      const data = snap.data();
+      const docId = context.params.docId;
+      const ref = await admin.firestore()
+          .collection("users")
+          .doc(data.friendUid)
+          .get();
+      if (!ref.exists) {
+        functions.logger.log("user does not exist");
+        return admin
+            .firestore()
+            .collection("incoming_friend_request")
+            .doc(docId)
+            .delete();
+      }
+      // append caller's uid into friend's requests
+      await admin.firestore()
+          .collection("users")
+          .doc(data.friendUid)
+          .update({
+            friendRequests: admin.firestore
+                .FieldValue
+                .arrayUnion(data.uid),
+          });
+      return admin
+          .firestore()
+          .collection("incoming_friend_request")
+          .doc(docId)
+          .delete();
+    });
 
-//         await admin
-//             .firestore()
-//             .collection("users")
-//             .doc(requestedUser)
-//             .collection("race_requests")
-//             .add({
-//               docId: docId,
-//               sender,
-//               requestedUser,
-//               location,
-//             });
-//         return await admin
-//             .firestore()
-//             .collection("users")
-//             .doc(sender)
-//             .collection("race_requests")
-//             .add({
-//               docId: docId,
-//               sender,
-//               requestedUser,
-//               location,
-//             });
-//       }
-//     });
+// update caller ("person who accepts friend request")
+// update requester
+exports.approveFriend = functions.firestore
+    .document("incoming_approve_friend/{docId}")
+    .onCreate(async (snap, context) =>{
+      const data = snap.data();
+      const docId = context.params.docId;
+      const ref = await admin.firestore()
+          .collection("users")
+          .doc(data.friendUid)
+          .get();
+      if (!ref.exists) {
+        functions.logger.log("user does not exist");
+        return admin
+            .firestore()
+            .collection("incoming_friend_request")
+            .doc(docId)
+            .delete();
+      }
+      // remove friend's id from requests
+      await admin.firestore()
+          .collection("users")
+          .doc(data.uid)
+          .update({
+            friendRequests: admin.firestore
+                .FieldValue
+                .arrayRemove(data.friendUid),
+          });
+      await admin.firestore()
+          .collection("users")
+          .doc(data.uid)
+          .update({
+            friends: admin.firestore
+                .FieldValue
+                .arrayUnion(data.friendUid),
+          });
+      // append caller's uid into friend's requests
+      return admin.firestore()
+          .collection("users")
+          .doc(data.friendUid)
+          .update({
+            friends: admin.firestore
+                .FieldValue
+                .arrayUnion(data.uid),
+          });
+    });
 
+exports.rejectFriend = functions.firestore
+    .document("incoming_reject_friend/{docId}")
+    .onCreate(async (snap, context) =>{
+      const data = snap.data();
+      const docId = context.params.docId;
+      // remove friend's id from requests
+      return admin.firestore()
+          .collection("users")
+          .doc(data.uid)
+          .update({
+            friendRequests: admin.firestore
+                .FieldValue
+                .arrayRemove(data.friendUid),
+          });
+    });
 
 const app = express();
 const server = new ApolloServer({
