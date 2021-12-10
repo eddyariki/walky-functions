@@ -7,27 +7,19 @@ export const typeDefs: DocumentNode = gql`
   }
 
   type Mutation {
-    addTest(text: String!): Test
-    updateUser(
-      uid: ID!
-      displayName: String!
-      age: String
-      birthday: String
-      weight: String!
-    ): User
+    registerUser(uid: ID!, name: String!, phone: String!): User
   }
 
   type User {
+<<<<<<< HEAD
     age: String
     birthday: String
     name: String!
     displayName: String!
+=======
+>>>>>>> 7f06c7191a3e15b32f061172a4170f8b027d9235
     uid: ID!
-    weight: String!
-  }
-
-  type Test {
-    uid: ID!
-    text: String!
+    name: String!
+    phone: String!
   }
 `;

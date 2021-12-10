@@ -1,9 +1,9 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {ApolloServer} from "apollo-server-express";
-import {resolvers} from "./resolver";
 import {typeDefs} from "./typeDefs";
 import express from "express";
+import {resolvers} from "./resolver";
 
 admin.initializeApp();
 
@@ -64,21 +64,72 @@ exports.updateUser = functions.firestore
       }
     });
 
-const app = express();
+// // request to start a race
+// exports.createRaceRequest = functions.firestore
+//     .document("race_request/{docId}")
+//     .onCreate(async (snap, context) => {
+//       const original = snap.data();
+//       const docId = context.params.docId;
+//       const sender = original.senderUid;
+//       const requestedUser = original.requestedUserUid;
+//       const ref = await admin
+//           .firestore()
+//           .collection("users")
+//           .doc(requestedUser)
+//           .get();
+//       if (!ref.exists) {
+//         functions.logger.log("user does not exist");
+//         return admin
+//             .firestore()
+//             .collection("race_request")
+//             .doc(docId)
+//             .delete();
+//       } else {
+//         const {location} = original;
+//         functions.logger.log(
+//             "race request created",
+//             docId,
+//             sender,
+//             requestedUser,
+//             location
+//         );
 
+//         await admin
+//             .firestore()
+//             .collection("users")
+//             .doc(requestedUser)
+//             .collection("race_requests")
+//             .add({
+//               docId: docId,
+//               sender,
+//               requestedUser,
+//               location,
+//             });
+//         return await admin
+//             .firestore()
+//             .collection("users")
+//             .doc(sender)
+//             .collection("race_requests")
+//             .add({
+//               docId: docId,
+//               sender,
+//               requestedUser,
+//               location,
+//             });
+//       }
+//     });
+
+
+const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: true,
 });
+(async () => {
+  await server.start();
+  server.applyMiddleware({app, path: "/"});
+  exports.graphql = functions.https.onRequest(app);
+})();
 
-server
-    .start()
-    .then(() => {
-      server.applyMiddleware({app, path: "/"});
-    })
-    .catch((e) => {
-      functions.logger.error("error", e);
-    });
 
-exports.graphql = functions.https.onRequest(app);
