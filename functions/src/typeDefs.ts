@@ -11,13 +11,6 @@ export const typeDefs: DocumentNode = gql`
   }
 
   type User {
-<<<<<<< HEAD
-    age: String
-    birthday: String
-    name: String!
-    displayName: String!
-=======
->>>>>>> 7f06c7191a3e15b32f061172a4170f8b027d9235
     uid: ID!
     name: String!
     phone: String!
