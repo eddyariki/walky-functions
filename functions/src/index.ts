@@ -1,29 +1,35 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import {ApolloServer} from "apollo-server-express";
+import {resolvers} from "./resolver";
 import {typeDefs} from "./typeDefs";
 import express from "express";
-import {resolvers} from "./resolver";
 
 admin.initializeApp({});
 
 exports.createNewUser = functions.auth.user().onCreate((user) => {
-  const {uid, displayName, phoneNumber} = user;
+  const {uid, email, displayName} = user;
   const account = {
     uid,
+    email,
     displayName,
-    phoneNumber,
     birthday: null,
     age: null,
     weight: null,
   };
-  functions.logger.log("user created", account.phoneNumber, account.uid);
+  functions.logger.log("user created", account.email, account.uid);
   return admin.firestore().collection("users").doc(uid).set(account);
 });
 
 exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   const {uid} = user;
+  functions.logger.log("user deleted v2", user.email, uid);
   await admin.firestore().collection("users").doc(uid).delete();
+  return admin
+      .firestore()
+      .collection("incoming_user_changes")
+      .doc(uid)
+      .delete();
 });
 
 exports.updateUser = functions.firestore
@@ -34,6 +40,7 @@ exports.updateUser = functions.firestore
       const ref = await admin.firestore().collection("users").doc(docId).get();
       if (!ref.exists) {
         functions.logger.log("user does not exist");
+
         return admin
             .firestore()
             .collection("incoming_user_changes")
@@ -64,72 +71,35 @@ exports.updateUser = functions.firestore
       }
     });
 
-// // request to start a race
-// exports.createRaceRequest = functions.firestore
-//     .document("race_request/{docId}")
-//     .onCreate(async (snap, context) => {
-//       const original = snap.data();
-//       const docId = context.params.docId;
-//       const sender = original.senderUid;
-//       const requestedUser = original.requestedUserUid;
-//       const ref = await admin
-//           .firestore()
-//           .collection("users")
-//           .doc(requestedUser)
-//           .get();
-//       if (!ref.exists) {
-//         functions.logger.log("user does not exist");
-//         return admin
-//             .firestore()
-//             .collection("race_request")
-//             .doc(docId)
-//             .delete();
-//       } else {
-//         const {location} = original;
-//         functions.logger.log(
-//             "race request created",
-//             docId,
-//             sender,
-//             requestedUser,
-//             location
-//         );
+exports.deleteUserChanges = functions.firestore
+    .document("users/{userId}")
+    .onUpdate((snap, context) => {
+    // return admin
+    //     .database()
+    //     .ref("/other")
+    //     .orderByChild("id")
+    //     .equalTo(context.params.pushId)
+    //     .once("value")
+    //     .then((snapshot) => {});
 
-//         await admin
-//             .firestore()
-//             .collection("users")
-//             .doc(requestedUser)
-//             .collection("race_requests")
-//             .add({
-//               docId: docId,
-//               sender,
-//               requestedUser,
-//               location,
-//             });
-//         return await admin
-//             .firestore()
-//             .collection("users")
-//             .doc(sender)
-//             .collection("race_requests")
-//             .add({
-//               docId: docId,
-//               sender,
-//               requestedUser,
-//               location,
-//             });
-//       }
-//     });
-
+      return admin.firestore().collection("incoming_user_changes").doc();
+    });
 
 const app = express();
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: true,
 });
-(async () => {
-  await server.start();
-  server.applyMiddleware({app, path: "/"});
-  exports.graphql = functions.https.onRequest(app);
-})();
 
+server
+    .start()
+    .then(() => {
+      server.applyMiddleware({app, path: "/"});
+    })
+    .catch((e) => {
+      console.log("weird");
+    });
 
+exports.graphql = functions.https.onRequest(app);
