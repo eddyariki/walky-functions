@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {generateUid} from "./lib/generateUid";
+// import {generateUid} from "./lib/generateUid";
 
 export const resolvers = {
   Query: {
@@ -9,40 +9,43 @@ export const resolvers = {
     },
   },
   Mutation: {
-    addTest: async (_: null, {text}: { text: string }) => {
-      const uid = generateUid();
-      await admin.firestore().collection("test").doc(uid).set({
+
+    // eslint-disable-next-line max-len
+    registerUser: async (_: null, {uid, phone, name}: {uid: string, phone: string, name: string}) => {
+      await admin.firestore().collection("users").doc(uid).set({
         uid: uid,
-        text: text,
+        phone: phone,
+        name: name,
       });
-      const testDoc = await admin.firestore().doc(`test/${uid}`).get();
-      const test = await testDoc.data();
-      return test;
+      const userRef = await admin.firestore().doc(`users/${uid}`).get();
+      const user = await userRef.data();
+      return user;
     },
 
-    updateUser: async (
-        _: null,
-        {
-          uid,
-          displayName,
-          age,
-          birthday,
-          weight,
-        }: {
-        uid: string;
-        displayName?: string;
-        age?: string;
-        birthday?: string;
-        weight?: string;
-      }
-    ): Promise<User> => {
-      await admin.firestore().collection("incoming_user_changes").doc(uid).set({
-        displayName,
-        age,
-        birthday,
-        weight,
-      });
-      return {uid, displayName, age, birthday, weight};
-    },
+    // updateUser: async (
+    //     _: null,
+    //     {
+    //       uid,
+    //       displayName,
+    //       age,
+    //       birthday,
+    //       weight,
+    //     }: {
+    //     uid: string;
+    //     displayName?: string;
+    //     age?: string;
+    //     birthday?: string;
+    //     weight?: string;
+    //   }
+    // ): Promise<User> => {
+    // eslint-disable-next-line max-len
+    //   await admin.firestore().collection("incoming_user_changes").doc(uid).set({
+    //     displayName,
+    //     age,
+    //     birthday,
+    //     weight,
+    //   });
+    //   return {uid, age, birthday, weight};
+    // },
   },
 };
