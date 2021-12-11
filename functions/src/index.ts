@@ -5,7 +5,7 @@ import {typeDefs} from "./typeDefs";
 import express from "express";
 import {resolvers} from "./resolver";
 
-admin.initializeApp();
+admin.initializeApp({});
 
 exports.createNewUser = functions.auth.user().onCreate((user) => {
   const {uid, displayName, phoneNumber} = user;

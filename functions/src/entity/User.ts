@@ -1,5 +1,5 @@
-type User = {
-    uid: string;
-    name: string;
-    phone: string;
-}
+// type User = {
+//     uid: string;
+//     name: string;
+//     phone: string;
+// }
