@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 // import {generateUid} from "./lib/generateUid";
 
-
 export const resolvers = {
   Query: {
     async users() {
