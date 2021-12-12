@@ -3,7 +3,7 @@ import {AuthenticationError, ExpressContext} from "apollo-server-express";
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
-export const validateFirebaseIdToken = async ({req}:ExpressContext):Promise<void> => {
+export const validateFirebaseIdToken = async ({req}:ExpressContext):Promise<admin.auth.DecodedIdToken> => {
   functions.logger.log("Check if request is authorized with Firebase ID token");
 
   if ((!req.headers.authorization ||
@@ -35,6 +35,7 @@ export const validateFirebaseIdToken = async ({req}:ExpressContext):Promise<void
   try {
     const decodedIdToken = await admin.auth().verifyIdToken(idToken);
     functions.logger.log("ID Token correctly decoded", decodedIdToken);
+    return decodedIdToken;
   } catch (error) {
     functions.logger.error("Error while verifying Firebase ID token:", error);
     throw new AuthenticationError("unauthorized");
