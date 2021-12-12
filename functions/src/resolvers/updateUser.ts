@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {validateFirebaseIdToken} from "../helpers";
 import {ExpressContext} from "apollo-server-express";
 
-export const registerUser = async (
+export const updateUser = async (
     _: null,
     {uid, name}: {uid: string, name: string},
     context: ExpressContext

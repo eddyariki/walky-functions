@@ -18,11 +18,6 @@ export const createNewUser = functions.auth.user().onCreate((user) => {
 export const deleteUser = functions.auth.user().onDelete(async (user) => {
   const {uid} = user;
   functions.logger.log("user deleted", uid);
-  await admin.firestore().collection("users").doc(uid).delete();
-  return admin
-      .firestore()
-      .collection("incoming_user_changes")
-      .doc(uid)
-      .delete();
+  return admin.firestore().collection("users").doc(uid).delete();
 });
 

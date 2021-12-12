@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 // import {generateUid} from "./lib/generateUid";
-import {registerUser} from "./resolvers/updateUser";
+import {updateUser} from "./resolvers/updateUser";
 export const resolvers = {
   Query: {
     async users() {
@@ -10,6 +10,6 @@ export const resolvers = {
   },
   Mutation: {
     // eslint-disable-next-line max-len
-    registerUser,
+    updateUser,
   },
 };
