@@ -71,20 +71,6 @@ exports.updateUser = functions.firestore
       }
     });
 
-exports.deleteUserChanges = functions.firestore
-    .document("users/{userId}")
-    .onUpdate((snap, context) => {
-    // return admin
-    //     .database()
-    //     .ref("/other")
-    //     .orderByChild("id")
-    //     .equalTo(context.params.pushId)
-    //     .once("value")
-    //     .then((snapshot) => {});
-
-      return admin.firestore().collection("incoming_user_changes").doc();
-    });
-
 const app = express();
 
 const server = new ApolloServer({
