@@ -3,13 +3,13 @@ import * as admin from "firebase-admin";
 
 export const createNewUser = functions.auth.user().onCreate((user) => {
   const {uid, phoneNumber} = user;
-  const account = {
+  // phoneNumber should never be undefined if we only allow phone auth
+  const account: User = {
     uid,
-    phoneNumber,
-    name: null,
-    birthday: null,
-    age: null,
-    weight: null,
+    phoneNumber: phoneNumber || "",
+    name: undefined,
+    age: undefined,
+    weight: undefined,
   };
   functions.logger.log("user created", account.uid, account.phoneNumber);
   return admin.firestore().collection("users").doc(uid).set(account);
