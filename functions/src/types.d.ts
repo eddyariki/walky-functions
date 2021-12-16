@@ -1,7 +1,7 @@
 type User = {
     uid: string,
     phoneNumber: string,
-    name?: string,
-    age?: number,
-    weight?: number,
+    name?: string | null,
+    age?: number | null,
+    weight?: number | null,
   }

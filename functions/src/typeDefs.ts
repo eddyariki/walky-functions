@@ -16,10 +16,12 @@ export const typeDefs: DocumentNode = gql`
 
       acceptFriend(
         friendUid: ID!
+        uid: ID!
       ): ID
 
       addFriend(
         friendUid: ID!
+        uid: ID!
       ): ID
 
       rejectFriend(

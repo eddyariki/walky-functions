@@ -7,9 +7,9 @@ export const createNewUser = functions.auth.user().onCreate((user) => {
   const account: User = {
     uid,
     phoneNumber: phoneNumber || "",
-    name: undefined,
-    age: undefined,
-    weight: undefined,
+    name: null,
+    age: null,
+    weight: null,
   };
   functions.logger.log("user created", account.uid, account.phoneNumber);
   return admin.firestore().collection("users").doc(uid).set(account);
