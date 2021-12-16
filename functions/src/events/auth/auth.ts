@@ -5,11 +5,8 @@ export const createNewUser = functions.auth.user().onCreate((user) => {
   const {uid, phoneNumber} = user;
   // phoneNumber should never be undefined if we only allow phone auth
   const account: User = {
-    uid,
+    uid: uid,
     phoneNumber: phoneNumber || "",
-    name: undefined,
-    age: undefined,
-    weight: undefined,
   };
   functions.logger.log("user created", account.uid, account.phoneNumber);
   return admin.firestore().collection("users").doc(uid).set(account);
