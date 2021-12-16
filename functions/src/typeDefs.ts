@@ -13,6 +13,19 @@ export const typeDefs: DocumentNode = gql`
       age:  Int,
       weight: Float, 
       ): User
+
+      acceptFriend(
+        friendUid: ID!
+      ): ID
+
+      addFriend(
+        friendUid: ID!
+      ): ID
+
+      rejectFriend(
+        friendUid: ID!
+      ): ID
+
   }
 
   type User {

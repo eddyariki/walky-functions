@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {validateFirebaseIdToken} from "../helpers";
 import {ApolloError, ExpressContext} from "apollo-server-express";
 
-export const addFriend = async (
+export const acceptFriend = async (
     _: null,
     {
       friendUid, // friend's uid
@@ -17,14 +17,11 @@ export const addFriend = async (
   if (friendUid !== reqUser.uid) {
     await admin
         .firestore()
-        .collection("users")
-        .doc(friendUid)
-        .collection("friends")
-        .doc(friendUid)
-        .set({
-          pendingFriends: admin.firestore
-              .FieldValue
-              .arrayUnion(reqUser.uid),
+        .collection("incoming_friend_accept")
+        .doc(reqUser.uid)
+        .create({
+          uid: reqUser.uid,
+          friendUid,
         });
     return friendUid;
   } else {
