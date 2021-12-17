@@ -4,6 +4,7 @@ import {DocumentNode} from "graphql";
 export const typeDefs: DocumentNode = gql`
   type Query {
     users: [User]
+    getUser(uid: ID!): User
   }
 
   type Mutation {
@@ -11,7 +12,9 @@ export const typeDefs: DocumentNode = gql`
       uid: ID!, 
       name: String, 
       age:  Int,
-      weight: Float, 
+      weight: Float,
+      userCode: String,
+      icon: String,
       ): User
   }
 
@@ -21,5 +24,7 @@ export const typeDefs: DocumentNode = gql`
     name: String
     age: Int,
     weight: Float,
+    userCode: String,
+    icon: String,
   }
 `;
