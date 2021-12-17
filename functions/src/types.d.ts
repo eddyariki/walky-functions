@@ -4,4 +4,6 @@ type User = {
     name?: string,
     age?: number,
     weight?: number,
+    userCode?: string,
+    icon?: string,
   }
