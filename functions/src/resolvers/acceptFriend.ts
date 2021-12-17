@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import {validateFirebaseIdToken} from "../helpers";
-import {ApolloError, ExpressContext} from "apollo-server-express";
+import {ExpressContext} from "apollo-server-express";
 
 export const acceptFriend = async (
     _: null,
