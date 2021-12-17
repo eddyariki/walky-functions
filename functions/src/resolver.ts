@@ -10,6 +10,10 @@ export const resolvers = {
       const users = await admin.firestore().collection("users").get();
       return users.docs.map((user) => user.data());
     },
+    async getUser(_:null, {uid}: {uid: string}) {
+      const user = await admin.firestore().collection("users").doc(uid).get();
+      return user.data();
+    },
   },
   Mutation: {
     // eslint-disable-next-line max-len

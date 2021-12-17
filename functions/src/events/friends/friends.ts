@@ -8,11 +8,6 @@ import * as admin from "firebase-admin";
 // on both users
 
 
-// values ={
-//     uid
-//     friendUid,
-// }
-
 // make rules for this so only proper users can create it
 export const acceptFriendEvent = functions
     .firestore
@@ -24,34 +19,43 @@ export const acceptFriendEvent = functions
       functions.logger.log(values);
       //   const doc = await userFriendsRef.get();
       // check to make sure friend has actually requested to be added
-      //   if (doc.data()?.pendingFriends.includes(values.friendUid)) {
-      // change self's friendlist
-      await admin.firestore().collection("users")
+      const friendsRef = await admin.firestore().collection("users")
           .doc(values.uid)
           .collection("friends")
           .doc(values.uid)
-          .set({
-            friendsList: admin
-                .firestore
-                .FieldValue
-                .arrayUnion(values.friendUid),
-            pendingFriends: admin
-                .firestore
-                .FieldValue
-                .arrayRemove(values.friendUid),
-          });
+          .get();
+      if (friendsRef?.data()?.pendingFriends.includes(values.friendUid)) {
+        // change self's friendlist
+        await admin.firestore().collection("users")
+            .doc(values.uid)
+            .collection("friends")
+            .doc(values.uid)
+            .set({
+              friendsList: admin
+                  .firestore
+                  .FieldValue
+                  .arrayUnion(values.friendUid),
+              pendingFriends: admin
+                  .firestore
+                  .FieldValue
+                  .arrayRemove(values.friendUid),
+            });
 
-      await admin.firestore().collection("users")
-          .doc(values.friendUid).collection("friends")
-          .doc(values.friendUid).set({
-            friendsList: admin
-                .firestore
-                .FieldValue
-                .arrayUnion(values.uid),
-          });
-      return admin
-          .firestore()
-          .collection("incoming_friend_accept")
-          .doc(docId)
-          .delete();
+        await admin.firestore().collection("users")
+            .doc(values.friendUid).collection("friends")
+            .doc(values.friendUid).set({
+              friendsList: admin
+                  .firestore
+                  .FieldValue
+                  .arrayUnion(values.uid),
+            });
+        return admin
+            .firestore()
+            .collection("incoming_friend_accept")
+            .doc(docId)
+            .delete();
+      } else {
+        functions.logger.error("friend not in pendingFriends");
+        return;
+      }
     });
