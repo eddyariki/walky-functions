@@ -15,6 +15,19 @@ export const typeDefs: DocumentNode = gql`
       weight: Float,
       userCode: String,
       ): User
+
+      acceptFriend(
+        friendUid: ID!
+      ): ID
+
+      addFriend(
+        friendUid: ID!
+      ): ID
+
+      rejectFriend(
+        friendUid: ID!
+      ): ID
+
   }
 
   type User {

@@ -10,6 +10,8 @@ export const createNewUser = functions.auth.user().onCreate((user) => {
     name: undefined,
     age: undefined,
     weight: undefined,
+    userCode: undefined,
+    icon: undefined,
   };
   functions.logger.log("user created", account.uid, account.phoneNumber);
   return admin.firestore().collection("users").doc(uid).set(account);
