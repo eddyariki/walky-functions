@@ -30,7 +30,7 @@ export const updateUser = async (
           age,
           weight,
           userCode,
-        });
+        }, {merge: true});
     const userRef = await admin
         .firestore()
         .doc(`users/${uid}`)
