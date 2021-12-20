@@ -14,7 +14,6 @@ export const typeDefs: DocumentNode = gql`
       age:  Int,
       weight: Float,
       userCode: String,
-      icon: String,
       ): User
   }
 
