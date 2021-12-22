@@ -11,8 +11,8 @@ import mkdirp from "mkdirp";
 
 
 // Max height and width of the thumbnail in pixels.
-const THUMB_MAX_HEIGHT = 200;
-const THUMB_MAX_WIDTH = 200;
+const THUMB_MAX_HEIGHT = 400;
+const THUMB_MAX_WIDTH = 400;
 // Thumbnail prefix added to file names.
 const THUMB_PREFIX = "thumb_";
 
