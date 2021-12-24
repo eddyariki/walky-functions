@@ -9,24 +9,32 @@ export const updateUser = async (
       name,
       age,
       weight,
-    }
-      :
-      {
-        uid: string,
-        name?: string,
-        age? : number,
-        weight?: number
-      },
+      userCode,
+    }: {
+    uid: string;
+    name?: string;
+    age?: number;
+    weight?: number;
+    userCode?: string;
+  },
     context: ExpressContext
-):Promise<FirebaseFirestore.DocumentData | undefined> => {
+): Promise<FirebaseFirestore.DocumentData | undefined> => {
   const reqUser = await validateFirebaseIdToken(context);
   if (uid === reqUser.uid) {
-    await admin.firestore().collection("users").doc(uid).set({
-      name,
-      age,
-      weight,
-    });
-    const userRef = await admin.firestore().doc(`users/${uid}`).get();
+    await admin
+        .firestore()
+        .collection("users")
+        .doc(uid)
+        .set({
+          name,
+          age,
+          weight,
+          userCode,
+        }, {merge: true});
+    const userRef = await admin
+        .firestore()
+        .doc(`users/${uid}`)
+        .get();
     const user = await userRef.data();
     return user;
   } else {
