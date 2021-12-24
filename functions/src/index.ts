@@ -6,6 +6,7 @@ import {typeDefs} from "./typeDefs";
 import express from "express";
 import {createNewUser, deleteUser} from "./events/auth/auth";
 import {acceptFriendEvent} from "./events/friends/friends";
+import {generateThumbnail} from "./events/storage/icon";
 
 admin.initializeApp();
 
@@ -34,3 +35,5 @@ exports.createNewUser = createNewUser;
 exports.deleteUser = deleteUser;
 
 exports.acceptFriendEvent = acceptFriendEvent;
+
+exports.generateThumbnail = generateThumbnail;
