@@ -71,36 +71,29 @@ export const acceptFriendEvent = functions
       functions.logger.log(values);
       //   const doc = await userFriendsRef.get();
       // check to make sure friend has actually requested to be added
-      const friendsRef = await admin.firestore().collection("users")
+      const db = admin.firestore();
+      const friendsRef = await db.collection("users")
           .doc(values.uid)
           .collection("pending_friends")
           .doc(values.friendUid)
           .get();
       if (friendsRef) {
         // change self's friendlist
-        await admin.firestore().collection("users")
-            .doc(values.uid)
+        const batch = db.batch();
+        const usersRef = db.collection("users").doc(values.uid);
+        batch.delete(usersRef
             .collection("pending_friends")
-            .doc(values.friendUid)
-            .delete();
-        await admin.firestore().collection("users")
-            .doc(values.uid)
-            .collection("friends")
-            .doc(values.friendUid)
-            .set({
-              friendUid: values.friendUid,
-            });
-
-        await admin.firestore().collection("users")
+            .doc(values.friendUid));
+        batch.set(usersRef.collection("friends")
+            .doc(values.friendUid), {
+          friendUid: values.friendUid,
+        });
+        batch.set(db.collection("users")
             .doc(values.friendUid).collection("friends")
-            .doc(values.uid).set({
-              friendUid: values.uid,
-            });
-        return admin
-            .firestore()
-            .collection("incoming_friend_accept")
-            .doc(docId)
-            .delete();
+            .doc(values.uid), {friendUid: values.uid});
+        batch.delete(db.collection("incoming_friend_accept")
+            .doc(docId));
+        return batch.commit();
       } else {
         functions.logger.error("friend not in pendingFriends");
         return;

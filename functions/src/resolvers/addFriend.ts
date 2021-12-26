@@ -54,8 +54,8 @@ export const addFriend = async (
         .collection("users")
         .doc(friendUid)
         .collection("pending_friends")
-        .doc(friendUid)
-        .set({friendUid: friendUid});
+        .doc(reqUser.uid)
+        .set({friendUid: reqUser.uid});
     return friendUid;
   } else {
     throw new ApolloError("server error");

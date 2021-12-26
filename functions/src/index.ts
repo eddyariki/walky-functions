@@ -8,6 +8,7 @@ import {createNewUser, deleteUser} from "./events/auth/auth";
 import {acceptFriendEvent} from "./events/friends/friends";
 import {generateThumbnail} from "./events/storage/icon";
 
+
 admin.initializeApp();
 
 const app = express();
